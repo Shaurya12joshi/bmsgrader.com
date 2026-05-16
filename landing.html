@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./src/output.css" rel="stylesheet">
+    <title>BMS Grader</title>
+    <link rel="icon" href="logo2.png" type="image/png">
+
+    <style>
+        /* ============================================================
+           MOBILE & TABLET RESPONSIVE OVERRIDES  (max-width: 1023px)
+           Laptop (>=1024px) is completely untouched.
+        ============================================================ */
+
+        /* Hamburger: hidden on laptop */
+        .hamburger-btn { display: none; }
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 1rem;
+            background: #171717;
+            border: 1px solid #404040;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 50;
+            min-width: 200px;
+        }
+        .mobile-menu.open { display: flex; }
+
+        @media (max-width: 1023px) {
+
+            /* Prevent the whole page from scrolling horizontally */
+            body { overflow-x: hidden !important; }
+
+            /* --- NAV --- */
+            nav {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                height: auto !important;
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+                position: relative !important;
+            }
+            nav > a { width: 7rem !important; }
+            .desktop-nav-links { display: none !important; }
+            .hamburger-btn { display: flex !important; margin-left: auto; }
+            .profile-wrapper { margin-left: 0.75rem !important; }
+
+            /* --- CGPA CARD --- */
+            .cgpa-card {
+                margin: 1rem !important;
+                height: auto !important;
+                padding: 1.5rem !important;
+                flex-direction: column !important;
+                gap: 1.25rem !important;
+            }
+            .cgpa-card input { width: 100% !important; }
+
+            /* --- YEAR CARDS WRAPPER --- */
+            .year-cards-wrapper { margin-right: 0 !important; }
+
+            /* --- YEAR CARDS --- */
+            .year-card {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                margin: 0 !important;
+                margin-bottom: 1.25rem !important;
+                border-radius: 0 !important;
+                padding: 1rem !important;
+            }
+
+            /* --- SEMESTER HEADER ROWS --- */
+            .semester-row {
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+                margin-left: 0.5rem !important;
+                margin-right: 0.5rem !important;
+                padding: 0.75rem !important;
+                margin-top: 0.75rem !important;
+            }
+            .semester-row .addSubject { width: 100% !important; }
+
+            /* =====================================================
+               INJECTED SUBJECT CARD — the main overflow culprit.
+               The JS injects fixed Tailwind widths (w-278, w-128,
+               w-90, ml-70, etc.) that we must override here.
+            ===================================================== */
+
+            /* Outer subject card */
+            .subjectContainer > div {
+                width: 100% !important;
+                box-sizing: border-box !important;
+                max-width: 100% !important;
+                padding: 1rem !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+            }
+
+            /* Top header row (Subject label + GPA/Total/Grade chips + Delete) */
+            .subjectContainer > div > div:first-child {
+                flex-direction: column !important;
+                height: auto !important;
+                gap: 0.75rem !important;
+                align-items: flex-start !important;
+            }
+
+            /* Subject checkbox row (w-70) */
+            .subjectContainer > div > div:first-child > div:first-child {
+                width: 100% !important;
+                flex-wrap: wrap !important;
+                gap: 0.5rem !important;
+            }
+
+            /* Credits label (ml-15) */
+            .subjectContainer > div > div:first-child > div:nth-child(2) {
+                margin-left: 0 !important;
+            }
+
+            /* GPA / Total / Grade / Delete chips row (ml-70, w-90) */
+            .subjectContainer > div > div:first-child > div:last-child {
+                width: 100% !important;
+                margin-left: 0 !important;
+                margin-top: 0.5rem !important;
+                flex-wrap: wrap !important;
+                gap: 0.5rem !important;
+                justify-content: flex-start !important;
+            }
+
+            /* Subject select + credits input row (w-128) */
+            .subjectContainer > div > div:nth-child(2) {
+                width: 100% !important;
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+            }
+            .subjectContainer > div > div:nth-child(2) select,
+            .subjectContainer > div > div:nth-child(2) input {
+                width: 100% !important;
+            }
+
+            /* IA inputs row */
+            .subjectContainer > div > div:nth-child(3) > div {
+                flex-wrap: wrap !important;
+                gap: 0.75rem !important;
+                margin: 0.5rem 0 !important;
+                justify-content: flex-start !important;
+            }
+
+            /* Lab / CCA / IA3 recommendation bottom row */
+            .subjectContainer > div > div:nth-child(4) {
+                flex-direction: column !important;
+                gap: 0.75rem !important;
+                align-items: stretch !important;
+            }
+            .subjectContainer > div > div:nth-child(4) > div {
+                width: 100% !important;
+                margin-left: 0 !important;
+                box-sizing: border-box !important;
+            }
+
+            /* --- RESET --- */
+            .reset-wrapper { margin: 1rem !important; }
+            .reset-wrapper button { width: 100% !important; }
+
+            /* --- HEADING --- */
+            section h1 { font-size: 1.5rem !important; padding: 0 1rem !important; }
+        }
+
+        /* Tablet (640–1023px): slightly more spacious */
+        @media (min-width: 640px) and (max-width: 1023px) {
+            .year-card {
+                margin: 0 1.25rem 1.25rem !important;
+                border-radius: 1rem !important;
+                padding: 1.5rem !important;
+            }
+            .cgpa-card {
+                margin: 1rem 1.25rem !important;
+                flex-direction: row !important;
+                gap: 0 !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                padding: 2rem !important;
+            }
+            .cgpa-card input { width: 18rem !important; }
+            .semester-row {
+                flex-direction: row !important;
+                gap: 0 !important;
+                justify-content: space-between !important;
+                margin-left: 1.5rem !important;
+                margin-right: 1.5rem !important;
+                padding: 1.25rem !important;
+                margin-top: 2rem !important;
+            }
+            .semester-row .addSubject { width: auto !important; }
+            section h1 { font-size: 2rem !important; }
+
+            /* Tablet: IA inputs can sit in a row again */
+            .subjectContainer > div > div:nth-child(3) > div {
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+            }
+
+            /* Tablet: Lab/CCA row can go side by side */
+            .subjectContainer > div > div:nth-child(4) {
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+            }
+            .subjectContainer > div > div:nth-child(4) > div {
+                flex: 1 1 45% !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-black font-roboto h-800"> 
+
+    <div>  
+        <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+    <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-1/2 -z-10 aspect-1155/678 w-144.5 max-w-none -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-40rem)] sm:w-288.75"></div>
+  </div>   
+
+    <div class=" "  >
+
+        <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+    <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-1/2 -z-10 aspect-1155/678 w-144.5 max-w-none -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-40rem)] sm:w-288.75"></div>
+  </div> 
+  <div>  
+        <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+    <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-1/2 -z-10 aspect-1155/678 w-144.5 max-w-none -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-40rem)] sm:w-288.75"></div>
+  </div>
+
+  <div>  
+        <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+    <div style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)" class="relative left-1/2 -z-10 aspect-1155/678 w-144.5 max-w-none -translate-x-1/2 rotate-30 bg-linear-to-tr from-[#ff80b5] to-[#9089fc] opacity-20 sm:left-[calc(50%-40rem)] sm:w-288.75"></div>
+  </div>
+
+  <!-- NAV: original markup preserved exactly; only added hook classes and hamburger element -->
+  <nav class="border-none text-center text-white h-17 flex" style="position:relative;">
+    <a href="index.html" class="w-55"><img src="Logo.png"  ></a>
+
+    <div class="desktop-nav-links flex justify-center space-x-50 w-400 ml-33 mr-35">
+      <a href="index.html" class="text-white h-20 mt-5 text-2xl font-bold cursor-pointer">Home</a>
+      <a href="attendanceComingSoon.html" class="text-2xl font-bold mt-5 text-white h-20 cursor-pointer">Attendance Calculator</a>
+      <a href="feedback.html" class="text-2xl font-bold mt-5 text-white h-20 cursor-pointer">Contribute</a>
+    </div>
+
+    <!-- Hamburger: hidden on laptop, shown on mobile/tablet via CSS -->
+    <button class="hamburger-btn text-white text-2xl px-3 mt-3 cursor-pointer bg-transparent border-none" onclick="document.getElementById('mobileMenu').classList.toggle('open')" aria-label="Open menu">☰</button>
+    <div id="mobileMenu" class="mobile-menu">
+      <a href="index.html" class="text-white text-base font-bold">Home</a>
+      <a href="attendanceComingSoon.html" class="text-white text-base font-bold">Attendance Calculator</a>
+      <a href="feedback.html" class="text-white text-base font-bold">Contribute</a>
+    </div>
+
+    <div class="profile-wrapper flex mt-3.5 w-25 mr-10">
+      <el-dropdown class="relative ml-3">
+        <button
+          class="relative flex max-w-xs items-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 cursor-pointer">
+          <span class="absolute -inset-1.5"></span>
+          <span class="sr-only">Open user menu</span>
+          <img src="Profile.png" alt=""
+            class="size-10 rounded-full outline -outline-offset-1 outline-white/10" />
+        </button>
+
+        <el-menu anchor="bottom end" popover
+          class="w-48 origin-top-right rounded-md bg-indigo-600 py-1 outline-1 -outline-offset-1 outline-white/10 transition transition-discrete [--anchor-gap:--spacing(2)] data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Your profile</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Settings</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-300 focus:bg-white/5 focus:outline-hidden">Sign out</a>
+        </el-menu>
+      </el-dropdown>
+    </div>
+  </nav>
+
+<div class="h-20 "></div>
+
+  <section class=" backdrop-blur-sm text-center py-12 text-white relative z-10">
+    <h1 class="text-4xl font-bold">Semester SGPA Planner</h1>
+  </section>
+</div>
+
+
+    </div>
+   
+    </div>
+
+    <!-- CGPA card: original classes preserved exactly; hook class added -->
+    <div class="cgpa-card bg-neutral-900 h-40 p-10 m-30 ml-25 max-w-full rounded-3xl flex justify-between">
+        <div>
+            <h2 class="text-white font-serif font-semibold ml-1">Live CGPA</h2>
+            <h1 id="overallCGPA" class="text-5xl text-green-500 font-bold">0.00</h1>
+        </div>
+        <div class="">
+            <h2 class="text-gray-500 font-bold">Target(for guidance)</h2>
+            <input id="wantCgpa" type="number" value="0" class="border-1 rounded-md border-gray-500 bg-black text-white text-center outline-none shadow-2xl w-90 h-10 focus:border-indigo-700 focus:border-4">
+            <p class="text-sm text-gray-400 "> Used to show "Required End‑Sem" and IA3 suggestions</p>
+        </div>
+    </div>
+
+    <!-- Year cards wrapper: hook class added -->
+    <div class="year-cards-wrapper justify-center mr-5 mb-10 space-y-12">
+
+    <!-- 1st Year: original classes preserved; hook classes added -->
+    <div class="year-card w-315 bg-neutral-900 rounded-2xl  p-15 flex flex-col m-25">
+        <div class="text-white flex justify-between">
+            <h2 class="text-3xl font-bold">1st Year</h2>
+            <p>Year CGPA: <span id="year1CGPA">0.00</span></p>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="1" data-sem="1">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 1</h1>
+                <label class="mt-2">SGPA <span id="year1sem1SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject" data-year="1" data-sem="1">Add Subject</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="1" data-sem="2">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 2</h1>
+                <label class="mt-2">SGPA <span id="year1sem2SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject"  data-year="1" data-sem="2">Add Subject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2nd Year -->
+    <div class="year-card w-315 bg-neutral-900 rounded-2xl  p-15 flex flex-col m-25">
+        <div class="text-white flex justify-between">
+            <h2 class="text-3xl font-bold">2nd Year</h2>
+            <p>Year CGPA: <span id="year2CGPA">0.00</span></p>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="2" data-sem="1">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 1</h1>
+                <label class="mt-2">SGPA <span id="year2sem1SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject" data-year="2" data-sem="1">Add Subject</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="2" data-sem="2">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 2</h1>
+                <label class="mt-2">SGPA <span id="year2sem2SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject" data-year="2" data-sem="2">Add Subject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3rd Year -->
+    <div class="year-card w-315 bg-neutral-900 rounded-2xl  p-15 flex flex-col m-25">
+        <div class="text-white flex justify-between">
+            <h2 class="text-3xl font-bold">3rd Year</h2>
+            <p>Year CGPA: <span id="year3CGPA">0.00</span></p>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="3" data-sem="1">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 1</h1>
+                <label class="mt-2">SGPA <span id="year3sem1SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject" data-year="3" data-sem="1">Add Subject</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="3" data-sem="2">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 2</h1>
+                <label class="mt-2">SGPA <span id="year3sem2SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject" data-year="3" data-sem="2">Add Subject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4th Year -->
+    <div class="year-card w-315 bg-neutral-900 rounded-2xl  p-15 flex flex-col m-25">
+        <div class="text-white flex justify-between">
+            <h2 class="text-3xl font-bold">4th Year</h2>
+            <p>Year CGPA: <span id="year3CGPA">0.00</span></p>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="4" data-sem="1">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 1</h1>
+                <label class="mt-2">SGPA <span id="year4sem1SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject" data-year="4" data-sem="1">Add Subject</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="bg-neutral-800 rounded-2xl pb-5 mt-6 space-y-6 subjectContainer" data-year="4" data-sem="2">
+                <div class="semester-row mt-10 ml-10 mr-10  p-5 flex flex-row justify-between  text-white">
+                <h1 class="text-lg text-white mt-1">Semester 2</h1>
+                <label class="mt-2">SGPA <span id="year4sem2SGPA">0.00</span></label>
+                <button class="bg-indigo-600 hover:bg-indigo-700 p-2 rounded-md addSubject" data-year="4" data-sem="2">Add Subject</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+    </div>
+
+    <!-- Reset: original classes preserved; hook class added -->
+    <div class="reset-wrapper m-8 ml-28">
+        <button id="reset" type="reset" class="bg-indigo-600 w-30 rounded-lg h-10 text-lg font-bold text-white p-0 hover:bg-indigo-700 cursor-pointer">
+            Reset All
+        </button>
+    </div>
+
+<script src="script.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script> 
+</body>
+</html>
